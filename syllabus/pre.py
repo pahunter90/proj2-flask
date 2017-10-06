@@ -9,7 +9,7 @@ logging.basicConfig(format='%(levelname)s:%(message)s',
 log = logging.getLogger(__name__)
 
 base = arrow.now()   # Default, replaced if file has 'begin: ...'
-current = arrow.now().floor('hour')
+current = arrow.now().floor('hour') #Takes in the floor of the hour of the current date 
 
 def process(raw):
     """
@@ -46,14 +46,18 @@ def process(raw):
                 raise ValueError("Unable to parse date {}".format(content))
 
         elif field == "week":
+            #Get the start and end dates for the week range to check against
             start = base.shift(weeks=+(int(content)-1))
             end = start.shift(days=+6)
+            
             if entry:
                 cooked.append(entry)
                 entry = {}
             entry['topic'] = ""
             entry['project'] = ""
             entry['week'] = (content+"\n"+str(start.format('MM/DD/YY')))            
+            
+            #Add new entry value called current that takes a bool: T for current week, F else
             if current in arrow.Arrow.range('hour',start, end):
                 entry['current'] = True
             else:
